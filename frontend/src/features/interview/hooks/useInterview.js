@@ -22,8 +22,9 @@ export const useInterview = () => {
       setReport(response.interviewReport);
       return response.interviewReport;
     } catch (error) {
-      console.error('Error generating interview report:', error);
-      throw error;
+      const message = error.response?.data?.message || 'Could not generate the interview report.';
+      console.error('Error generating interview report:', error.response?.data || error);
+      throw new Error(message);
     } finally {
       setLoading(false);
     }

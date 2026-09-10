@@ -6,20 +6,26 @@ const pdfParse = pdfParseModule.default || pdfParseModule;
 
 export const interviewReportGentrator = async (req, res) => {
     try {
-        if (!req.file || !req.file.buffer) {
-            return res.status(400).json({ message: "PDF resume file is required." });
-        }
-
         const { selfDescription, jobDescription } = req.body;
 
         if (!jobDescription) {
             return res.status(400).json({ message: "Job description is required." });
         }
 
-        const parser = new pdfParse.PDFParse({ data: req.file.buffer });
-        const resumeContent = await parser.getText();
-        await parser.destroy();
-        const extractedResumeText = resumeContent?.text || "";
+        if (!req.file?.buffer && !selfDescription?.trim()) {
+            return res.status(400).json({
+                message: "Upload a PDF resume or provide a self-description."
+            });
+        }
+
+        let extractedResumeText = "";
+
+        if (req.file?.buffer) {
+            const parser = new pdfParse.PDFParse({ data: req.file.buffer });
+            const resumeContent = await parser.getText();
+            await parser.destroy();
+            extractedResumeText = resumeContent?.text || "";
+        }
 
         const interviewReportAi = await generateInterviewReport({
             resume: extractedResumeText,
@@ -68,6 +74,19 @@ export const interviewReportGentrator = async (req, res) => {
             return res.status(400).json({
                 message: "Validation Error",
                 errors: error.errors
+            });
+        }
+
+        if (error.name === "ZodError") {
+            return res.status(502).json({
+                message: "The AI returned an invalid interview report. Please try again.",
+                error: error.message
+            });
+        }
+
+        if (error.name === "InvalidPDFException" || error.message?.includes("PDF")) {
+            return res.status(400).json({
+                message: "The uploaded file could not be read. Please upload a valid PDF resume."
             });
         }
 

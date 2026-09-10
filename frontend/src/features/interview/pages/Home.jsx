@@ -141,7 +141,7 @@ e.g. “Senior Frontend Engineer at Google requires proficiency in React, TypeSc
             <label className="upload-box" htmlFor="resume">
               <UploadIcon />
               <strong>Click to upload or drag &amp; drop</strong>
-              <small>PDF or DOCX (Max 5MB)</small>
+              <small>PDF (Max 3MB)</small>
             </label>
 
             <input
@@ -149,7 +149,7 @@ e.g. “Senior Frontend Engineer at Google requires proficiency in React, TypeSc
               id="resume"
               name="resume"
               type="file"
-              accept=".pdf,.doc,.docx"
+              accept=".pdf"
               hidden
             />
           </div>
