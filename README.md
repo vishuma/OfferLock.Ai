@@ -178,6 +178,47 @@ npm run dev
 
 The Vite development server normally runs at `http://localhost:5173`.
 
+## Deployment
+
+### Vercel frontend
+
+This repository contains the frontend in the `frontend/` directory. The root `vercel.json` is already configured to:
+
+- Install frontend dependencies
+- Build the Vite application
+- Serve `frontend/dist`
+- Support direct navigation to React routes such as `/login` and `/register`
+
+In Vercel, import the GitHub repository and leave the project root as the repository root. Vercel should use the committed `vercel.json` automatically. Do not set the Vercel output directory to the repository root.
+
+Update the backend URL in `frontend/src/config/api.config.js` before deploying the frontend:
+
+```js
+const API_BASE_URL = "https://your-backend-service.onrender.com";
+```
+
+### Render backend
+
+Create a Web Service pointing to the `backend/` directory, or configure the service commands as:
+
+```text
+Root Directory: backend
+Build Command: npm install
+Start Command: npm start
+```
+
+Set these environment variables in Render:
+
+```env
+PORT=10000
+FRONTEND_URL=https://offer-lock-ai.vercel.app
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRETE=your_long_random_jwt_secret
+GEMINI_API_KEY=your_gemini_api_key
+```
+
+After changing `api.config.js`, push to `main` so Vercel creates a new deployment.
+
 ## Available Commands
 
 ### Backend
