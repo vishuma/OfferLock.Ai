@@ -232,7 +232,6 @@ Before deploying:
 
 ## Current Limitations
 
-- The local setup currently expects the frontend at `localhost:5173` and backend at `localhost:3000`.
 - AI generation depends on Gemini availability and API quotas.
 - Resume extraction currently depends on PDF input.
 - Puppeteer must be able to launch Chromium in the deployment environment.
@@ -244,6 +243,3 @@ Before deploying:
 3. Run frontend lint and build checks before opening a pull request.
 4. Never commit secrets, generated builds, or local environment files.
 
-## License
-
-This project currently uses the ISC license declared by the backend package.
