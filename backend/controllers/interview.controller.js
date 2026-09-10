@@ -144,6 +144,13 @@ export const generateResumePdfController = async (req, res) => {
         return res.send(pdfBuffer);
     } catch (error) {
         console.error("Error generating resume PDF:", error);
+
+        if (error?.status === 429 || /429|quota|exceeded your current/i.test(error?.message || "")) {
+            return res.status(429).json({
+                message: "The AI service quota has been reached. Please try again later or update the Gemini API plan."
+            });
+        }
+
         return res.status(503).json({
             message: "Resume generation is temporarily unavailable. Please try again.",
             error: process.env.NODE_ENV === "production"
