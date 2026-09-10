@@ -9,10 +9,29 @@ import interviewRouter from "./routes/interview.routes.js"
 dotenv.config()
 const app=express();
 const port=process.env.PORT || 3000;
+const configuredFrontendOrigins = (process.env.FRONTEND_URL || "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+const isAllowedFrontendOrigin = (origin) => {
+    if (!origin || configuredFrontendOrigins.includes(origin)) {
+        return true;
+    }
+
+    return /^https:\/\/offer-lock-[a-z0-9-]+\.vercel\.app$/i.test(origin);
+};
+
 app.use(express.json());
 app.use(cookieParser())
 app.use(cors({
-    origin: process.env.FRONTEND_URL,
+    origin: (origin, callback) => {
+        if (isAllowedFrontendOrigin(origin)) {
+            return callback(null, true);
+        }
+
+        return callback(new Error(`CORS blocked origin: ${origin}`));
+    },
     credentials:true,
 }))
 
