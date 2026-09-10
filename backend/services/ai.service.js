@@ -24,6 +24,11 @@ const isTemporaryError = (error) => {
     return /429|500|502|503|504|UNAVAILABLE|overloaded|high demand/i.test(message);
 };
 
+const isQuotaError = (error) => {
+    const message = String(error?.message || error);
+    return /quota|exceeded your current|limit: 0/i.test(message);
+};
+
 const generateContentWithRetry = async (request) => {
     for (const delay of retryDelays) {
         if (delay > 0) {
@@ -33,7 +38,7 @@ const generateContentWithRetry = async (request) => {
         try {
             return await ai.models.generateContent(request);
         } catch (error) {
-            if (!isTemporaryError(error) || delay === retryDelays.at(-1)) {
+            if (isQuotaError(error) || !isTemporaryError(error) || delay === retryDelays.at(-1)) {
                 throw error;
             }
         }

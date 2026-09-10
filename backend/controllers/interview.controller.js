@@ -84,6 +84,12 @@ export const interviewReportGentrator = async (req, res) => {
             });
         }
 
+        if (error?.status === 429 || /429|quota|exceeded your current/i.test(error?.message || "")) {
+            return res.status(429).json({
+                message: "The AI service quota has been reached. Please try again later or update the Gemini API plan."
+            });
+        }
+
         if (error.name === "InvalidPDFException" || error.message?.includes("PDF")) {
             return res.status(400).json({
                 message: "The uploaded file could not be read. Please upload a valid PDF resume."
