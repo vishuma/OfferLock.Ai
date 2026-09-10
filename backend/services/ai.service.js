@@ -81,11 +81,17 @@ Job Description: ${jobDescription || "Not provided"}`;
 };
 
 async function generatePdfFromHtml(htmlContent) {
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({
+        headless: true,
+        args: ["--no-sandbox", "--disable-setuid-sandbox"]
+    });
 
     try {
         const page = await browser.newPage();
-        await page.setContent(htmlContent, { waitUntil: "networkidle0" });
+        await page.setContent(htmlContent, {
+            waitUntil: "domcontentloaded",
+            timeout: 30000
+        });
 
         const pdfData = await page.pdf({
             format: "A4",
