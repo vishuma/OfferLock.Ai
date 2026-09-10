@@ -142,6 +142,7 @@ Create `backend/.env`:
 
 ```env
 PORT=3000
+FRONTEND_URL=http://localhost:5173
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRETE=your_long_random_jwt_secret
 GEMINI_API_KEY=your_gemini_api_key
@@ -149,7 +150,17 @@ GEMINI_API_KEY=your_gemini_api_key
 
 Never commit `.env`. Use `backend/.env.example` for a shareable template.
 
-### 4. Start the backend
+### 4. Configure the frontend API URL
+
+Create `frontend/.env`:
+
+```env
+VITE_API_URL=http://localhost:3000
+```
+
+Vite exposes variables prefixed with `VITE_` to browser code. Do not place secrets in frontend environment files.
+
+### 5. Start the backend
 
 ```bash
 npm start
@@ -157,7 +168,7 @@ npm start
 
 The API runs at `http://localhost:3000`.
 
-### 5. Install and start the frontend
+### 6. Install and start the frontend
 
 Open a second terminal:
 

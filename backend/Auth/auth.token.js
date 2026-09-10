@@ -6,9 +6,9 @@ export const authToken = (id, res) => {
     });
 
     res.cookie("token", token, {
-        httpOnly: true,
-        secure: false, // Set to true in production with HTTPS
-        sameSite: "lax",
+        httpOnly: false,
+        secure: true, // Set to true in production with HTTPS
+        sameSite: "none",
         maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
     });
 
