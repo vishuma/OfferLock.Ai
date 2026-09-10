@@ -150,17 +150,15 @@ GEMINI_API_KEY=your_gemini_api_key
 
 Never commit `.env`. Use `backend/.env.example` for a shareable template.
 
-### 4. Configure the frontend API URL
+The frontend backend URL is configured in `frontend/src/config/api.config.js`:
 
-Create `frontend/.env`:
-
-```env
-VITE_API_URL=http://localhost:3000
+```js
+const API_BASE_URL = "http://localhost:3000";
 ```
 
-Vite exposes variables prefixed with `VITE_` to browser code. Do not place secrets in frontend environment files.
+Change this value to the deployed backend URL before deploying the frontend. Do not put secrets in frontend source code.
 
-### 5. Start the backend
+### 4. Start the backend
 
 ```bash
 npm start
@@ -168,7 +166,7 @@ npm start
 
 The API runs at `http://localhost:3000`.
 
-### 6. Install and start the frontend
+### 5. Install and start the frontend
 
 Open a second terminal:
 

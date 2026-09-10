@@ -1,10 +1,11 @@
 import axios from 'axios';
+import API_BASE_URL from '../../../config/api.config.js';
 
-const API_BASE_URL = `${import.meta.env.VITE_API_URL || "http://localhost:3000"}/api/auth`;
+const AUTH_API_URL = `${API_BASE_URL}/api/auth`;
 
 export async function register({ username, email, password }) {
     try {
-        const res = await axios.post(`${API_BASE_URL}/register`, {
+        const res = await axios.post(`${AUTH_API_URL}/register`, {
             username,
             email,
             password
@@ -20,7 +21,7 @@ export async function register({ username, email, password }) {
 
 export async function login({ email, password }) {
     try {
-        const res = await axios.post(`${API_BASE_URL}/login`, {
+        const res = await axios.post(`${AUTH_API_URL}/login`, {
             email,
             password
         }, {
@@ -36,7 +37,7 @@ export async function login({ email, password }) {
 export async function logout() {
     try {
         // Changed to GET to match router.get("/logout", ...)
-        const res = await axios.get(`${API_BASE_URL}/logout`, {
+        const res = await axios.get(`${AUTH_API_URL}/logout`, {
             withCredentials: true
         });
         return res.data;
@@ -49,7 +50,7 @@ export async function logout() {
 export async function getMe() {
     try {
         // Changed to GET to match router.get("/get-me", ...)
-        const res = await axios.get(`${API_BASE_URL}/get-me`, {
+        const res = await axios.get(`${AUTH_API_URL}/get-me`, {
             withCredentials: true
         });
         return res.data;
