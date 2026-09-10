@@ -121,7 +121,9 @@ export const generateResumePdfController = async (req, res) => {
         console.error("Error generating resume PDF:", error);
         return res.status(503).json({
             message: "Resume generation is temporarily unavailable. Please try again.",
-            error: error.message
+            error: process.env.NODE_ENV === "production"
+                ? "PDF generation failed on the server. Check the backend logs."
+                : error.message
         });
     }
 };

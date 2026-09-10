@@ -217,6 +217,14 @@ JWT_SECRETE=your_long_random_jwt_secret
 GEMINI_API_KEY=your_gemini_api_key
 ```
 
+For resume PDF generation, use a Render build command that installs Puppeteer's browser:
+
+```text
+npm install && npx puppeteer browsers install chrome
+```
+
+If Render provides a custom Chrome executable path, add it as `PUPPETEER_EXECUTABLE_PATH`. The backend also supports this variable automatically.
+
 After changing `api.config.js`, push to `main` so Vercel creates a new deployment.
 
 ## Available Commands
