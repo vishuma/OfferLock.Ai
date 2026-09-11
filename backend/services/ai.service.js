@@ -110,6 +110,25 @@ async function generatePdfFromHtml(htmlContent) {
     }
 }
 
+const createFallbackResumeHtml = ({ resume, selfDescription, jobDescription }) => `
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><style>
+body { font-family: Arial, sans-serif; color: #222; line-height: 1.45; }
+h1 { font-size: 24px; margin-bottom: 4px; }
+h2 { border-bottom: 1px solid #999; font-size: 14px; margin-top: 20px; padding-bottom: 4px; }
+p { white-space: pre-wrap; }
+</style></head>
+<body>
+<h1>Professional Resume</h1>
+<p>${selfDescription || "Candidate profile"}</p>
+<h2>Resume</h2>
+<p>${resume || "Resume details not provided."}</p>
+<h2>Target Job</h2>
+<p>${jobDescription || "Target job not provided."}</p>
+</body>
+</html>`;
+
 export const generateResumePdf = async ({ resume, selfDescription, jobDescription }) => {
     const resumePdfSchema = z.object({
         html: z.string().describe("HTML content of the resume that can be converted to PDF")
@@ -128,14 +147,21 @@ export const generateResumePdf = async ({ resume, selfDescription, jobDescriptio
                         The resume should not be so lengthy, it should ideally be 1-2 pages long when converted to PDF. Focus on quality rather than quantity and make sure to include all the relevant information that can increase the candidate's chances of getting an interview call for the given job description.
                     `;
 
-    const response = await generateContentWithRetry({
-        model: "gemini-3-flash-preview",
-        contents: prompt,
-        config: {
-            responseMimeType: "application/json",
-            responseSchema: zodToJsonSchema(resumePdfSchema),
-        }
-    });
+    let response;
+
+    try {
+        response = await generateContentWithRetry({
+            model: "gemini-3-flash-preview",
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: zodToJsonSchema(resumePdfSchema),
+            }
+        });
+    } catch (error) {
+        console.error("Resume AI generation failed; creating a profile PDF instead:", error.message);
+        return generatePdfFromHtml(createFallbackResumeHtml({ resume, selfDescription, jobDescription }));
+    }
 
     const parsedResponse = resumePdfSchema.parse(JSON.parse(response.text));
     return generatePdfFromHtml(parsedResponse.html);

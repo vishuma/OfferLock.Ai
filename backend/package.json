@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "postinstall": "puppeteer browsers install chrome",
     "test": "]",
     "start": "node app.js"
   },
