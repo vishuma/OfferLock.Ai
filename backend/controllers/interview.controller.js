@@ -1,5 +1,5 @@
 import * as pdfParseModule from 'pdf-parse';
-import { generateInterviewReport,generateResumePdf } from '../services/ai.service.js';
+import { generateInterviewReport, generateResumePdf } from '../services/ai.service.js';
 import { interviewReportModel } from "../models/interviewReport.model.js";
 
 const pdfParse = pdfParseModule.default || pdfParseModule;
@@ -52,6 +52,7 @@ export const interviewReportGentrator = async (req, res) => {
         const interviewReport = await interviewReportModel.create({
             user: req.user?.id || req.user?._id,
             resume: extractedResumeText,
+            resumeHtml: interviewReportAi.resumeHtml,
             selfDescription,
             jobDescription,
             title,
@@ -133,8 +134,13 @@ export const generateResumePdfController = async (req, res) => {
             return res.status(404).json({ message: "Interview report not found." });
         }
 
-        const { resume, jobDescription, selfDescription } = interviewReport;
-        const pdfBuffer = await generateResumePdf({ resume, jobDescription, selfDescription });
+        if (!interviewReport.resumeHtml) {
+            return res.status(409).json({
+                message: "This report was created before resume PDF support. Generate a new interview report to download its resume."
+            });
+        }
+
+        const pdfBuffer = await generateResumePdf({ html: interviewReport.resumeHtml });
 
         res.set({
             "Content-Type": "application/pdf",

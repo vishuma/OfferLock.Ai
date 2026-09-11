@@ -74,6 +74,9 @@ const interviewReportSchema = new mongoose.Schema({
     selfDescription: {
         type: String,
     },
+    resumeHtml: {
+        type: String,
+    },
     matchScore: {
         type: Number,
         min: 0,
