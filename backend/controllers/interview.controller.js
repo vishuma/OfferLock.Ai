@@ -1,5 +1,5 @@
 import * as pdfParseModule from 'pdf-parse';
-import { generateInterviewReport, generateResumePdf } from '../services/ai.service.js';
+import { generateInterviewReport, generateResumeHtml, generateResumePdf } from '../services/ai.service.js';
 import { interviewReportModel } from "../models/interviewReport.model.js";
 
 const pdfParse = pdfParseModule.default || pdfParseModule;
@@ -33,6 +33,12 @@ export const interviewReportGentrator = async (req, res) => {
             jobDescription
         });
 
+        const resumeHtml = await generateResumeHtml({
+            resume: extractedResumeText,
+            selfDescription,
+            jobDescription
+        });
+
         const title = interviewReportAi.title || interviewReportAi.appliedPosition || req.body.title || "Interview Report";
         const matchScore = typeof interviewReportAi.matchScore === 'number' 
             ? interviewReportAi.matchScore 
@@ -52,7 +58,7 @@ export const interviewReportGentrator = async (req, res) => {
         const interviewReport = await interviewReportModel.create({
             user: req.user?.id || req.user?._id,
             resume: extractedResumeText,
-            resumeHtml: interviewReportAi.resumeHtml,
+            resumeHtml,
             selfDescription,
             jobDescription,
             title,
