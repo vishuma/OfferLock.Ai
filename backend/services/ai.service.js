@@ -12,6 +12,9 @@ if (!googleGenAiApiKey) {
 
 const ai = new GoogleGenAI({
     apiKey: googleGenAiApiKey,
+    httpOptions: {
+        timeout: 30000
+    }
 });
 
 const retryDelays = [0, 1500, 3000];
@@ -93,7 +96,10 @@ async function generatePdfFromHtml(htmlContent) {
 
     try {
         const page = await browser.newPage();
-        await page.setContent(htmlContent, { waitUntil: "networkidle0" });
+        await page.setContent(htmlContent, {
+            waitUntil: "domcontentloaded",
+            timeout: 30000
+        });
 
         const pdfBuffer = await page.pdf({
             format: "A4", margin: {
@@ -163,8 +169,13 @@ export const generateResumePdf = async ({ resume, selfDescription, jobDescriptio
         return generatePdfFromHtml(createFallbackResumeHtml({ resume, selfDescription, jobDescription }));
     }
 
-    const parsedResponse = resumePdfSchema.parse(JSON.parse(response.text));
-    return generatePdfFromHtml(parsedResponse.html);
+    try {
+        const parsedResponse = resumePdfSchema.parse(JSON.parse(response.text));
+        return await generatePdfFromHtml(parsedResponse.html);
+    } catch (error) {
+        console.error("Generated resume HTML could not be converted; creating a profile PDF instead:", error.message);
+        return generatePdfFromHtml(createFallbackResumeHtml({ resume, selfDescription, jobDescription }));
+    }
 
 };
 
