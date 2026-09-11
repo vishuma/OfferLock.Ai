@@ -4,15 +4,14 @@ import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import 'dotenv/config';
 
-if (!process.env.GEMINI_API_KEY) {
-    throw new Error('GEMINI_API_KEY is not configured. Add it to backend/.env.');
+const googleGenAiApiKey = process.env.GOOGLE_GENAI_API_KEY || process.env.GEMINI_API_KEY;
+
+if (!googleGenAiApiKey) {
+    throw new Error('GOOGLE_GENAI_API_KEY or GEMINI_API_KEY is not configured. Add one to backend/.env.');
 }
 
 const ai = new GoogleGenAI({
-    apiKey: process.env.GEMINI_API_KEY,
-    httpOptions: {
-        timeout: 60000,
-    },
+    apiKey: googleGenAiApiKey,
 });
 
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -74,7 +73,7 @@ Self Description: ${selfDescription || "Not provided"}
 Job Description: ${jobDescription || "Not provided"}`;
 
     const response = await generateContentWithRetry({
-        model: "gemini-3.6-flash",
+        model: "gemini-3-flash-preview",
         contents: prompt,
         config: {
             responseMimeType: "application/json",
@@ -86,21 +85,7 @@ Job Description: ${jobDescription || "Not provided"}`;
 };
 
 async function generatePdfFromHtml(htmlContent) {
-    const launchOptions = {
-        headless: true,
-        args: [
-            "--no-sandbox",
-            "--disable-setuid-sandbox",
-            "--disable-dev-shm-usage"
-        ],
-        protocolTimeout: 30000
-    };
-
-    if (process.env.PUPPETEER_EXECUTABLE_PATH) {
-        launchOptions.executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
-    }
-
-    const browser = await puppeteer.launch(launchOptions);
+    const browser = await puppeteer.launch();
 
     try {
         const page = await browser.newPage();
@@ -142,7 +127,7 @@ Keep it concise enough for 1-2 A4 pages. Use semantic headings, normal text, and
 Do not include markdown fences or explanatory text outside the HTML value.`;
 
     const response = await generateContentWithRetry({
-        model: "gemini-3.6-flash",
+        model: "gemini-3-flash-preview",
         contents: prompt,
         config: {
             responseMimeType: "application/json",
