@@ -73,7 +73,7 @@ async function generatePdfFromHtml(htmlContent) {
     }
 }
 
-export async function generateResumeHtml({ resume, selfDescription, jobDescription }) {
+export async function generateResumePdf({ resume, selfDescription, jobDescription }) {
     const resumePdfSchema = z.object({
         html: z.string()
     });
@@ -100,9 +100,6 @@ export async function generateResumeHtml({ resume, selfDescription, jobDescripti
         }
     });
 
-    return resumePdfSchema.parse(JSON.parse(response.text)).html;
-}
-
-export async function generateResumePdf({ html }) {
+    const { html } = resumePdfSchema.parse(JSON.parse(response.text));
     return generatePdfFromHtml(html);
 }
